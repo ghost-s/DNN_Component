@@ -26,7 +26,7 @@ class ScaledDotProductAttention(nn.Module):
         return output, attn
 
 
-# 文本补全后的部分不应该拥有注意力权重
+# 使用<pad>来补全句子长度时，使用<pad>补全的部分不应该拥有注意力权重
 def get_attn_pad_mask(seq_q, seq_k, pad_val):
 
     batch_size, len_q = seq_q.shape
@@ -37,7 +37,6 @@ def get_attn_pad_mask(seq_q, seq_k, pad_val):
     pad_attn_mask = pad_attn_mask.expand([batch_size, len_q, len_k])
 
     return pad_attn_mask
-
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, d_k, n_heads, dropout_p = 0.):
@@ -156,6 +155,8 @@ class Encoder(nn.Module):
         for layer in self.layers:
             enc_outputs, enc_self_attn = layer(enc_outputs, enc_self_attn_mask)
             enc_self_attns.append(enc_self_attn)
+        # [bath_size, src_len, d_model]
+        # [batch_size, n_heads, src_len, src_len]
         return enc_outputs, enc_self_attn
 
 
@@ -165,7 +166,6 @@ def get_attn_subsequent_mask(seq_q, seq_k):
 
     ones = torch.ones([batch_size, len_q, len_k], dtype=torch.float32)
     return torch.triu(ones, diagonal=1)
-
 
 class DecoderLayer(nn.Module):
     def __init__(self, d_model, n_heads, d_ff, dropout_p=0.):
