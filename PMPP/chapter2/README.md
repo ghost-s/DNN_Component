@@ -1,2 +1,3 @@
-nvcc -o vecadd vecadd.cu
+nvcc -o vecadd vecadd.cu  
+
 ./vecadd
