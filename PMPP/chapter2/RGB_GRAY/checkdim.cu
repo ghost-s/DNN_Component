@@ -19,6 +19,20 @@ int main() {
     
     cout<<"Device ID: "<<deviceId<<endl;
 
+
+    for (int i = 0; i < deviceCount; ++i) {
+        int smCount = 0;
+        int coresPerSM = 0;
+        
+        // 获取当前设备的 SM 数量
+        cudaDeviceGetAttribute(&smCount, cudaDevAttrMultiProcessorCount, i);
+        // 获取每个 SM 上的最大线程数（可间接反映每个 SM 上的核心数）
+        cudaDeviceGetAttribute(&coresPerSM, cudaDevAttrMaxThreadsPerMultiProcessor, i);
+
+        std::cout << "设备 " << i << " 上的 SM 数量: " << smCount << std::endl;
+        std::cout << "设备 " << i << " 每个 SM 上的核心数（最大线程数）: " << coresPerSM << std::endl;
+    }
+
     int maxThreadsPerBlock;
     cudaDeviceGetAttribute(&maxThreadsPerBlock, cudaDevAttrMaxThreadsPerBlock, deviceId);
 
